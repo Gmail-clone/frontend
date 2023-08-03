@@ -5,6 +5,7 @@ import SideBarContent from './SideBarContent'
 
 export default function SideBar({openDrawer}) {
   return (
+    <>
     <Drawer
      anchor='left' 
      open = {openDrawer}
@@ -26,5 +27,7 @@ export default function SideBar({openDrawer}) {
      >
    <SideBarContent/>
     </Drawer>
+    
+    </>
   )
 }

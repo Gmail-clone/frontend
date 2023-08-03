@@ -13,6 +13,7 @@ export default function Main() {
     <Header toggleDrawer = {toggleDrawer}/>
     <SideBar openDrawer = {openDrawer}/>
     <div>Display Mail</div>
+
     </>
   )
 }
