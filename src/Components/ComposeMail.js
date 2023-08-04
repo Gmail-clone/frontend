@@ -1,6 +1,10 @@
 import { Dialog, Box, styled, InputBase, Typography, TextField, Button } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import { Close, DeleteOutline } from '@mui/icons-material/';
+import emailjs from '@emailjs/browser';
+import useApi from '../hooks/useApi';
+import { API_URLS } from '../services/api.urls';
+
 
 
 const dialogStyle = {
@@ -56,37 +60,57 @@ const SendButton = styled(Button)({
 })
 
 export default function ComposeMail({ showComposeMail, setShowComposeMail }) {
-    const config = {
-        // Host: "smtp.elasticemail.com",
-        // Username: "hariompatel127@gmail.com",
-        // Password: "8010ECF93E554179A7B1AE2EFE4CA14606AD",
-        // Port: 2525,
-        Port: 2525,
-        Host: "smtp.elasticemail.com",
-        Username: "hariompatel@yopmail.com",
-        Password: "56BFDC1F8562EF4EE8598A970B95134BE028",
-      
-    }
+
+    const sentEmailService = useApi(API_URLS.saveSentEmail);
+
+
+   const [data, setData] = useState({
+    Recipent : "",
+    Subject: "",
+    Message: "",
+   });
+
+ 
     const closeComposeMail = (e) => {
         e.preventDefault();
         setShowComposeMail(false);
     }
-    const handleSendMail = (e) => {
+    const handleSendMail = async (e) => {
         e.preventDefault();
 
-        if (window.Email) {
-            console.log(window.Email);
-            window.Email.send({
-                ...config,
-                To: 'hariompatel127@gmail.com',
-                From: "hariompatel127@gmail.com",
-                Subject: "This is the subject",
-                Body: "And this is the body"  
-            }).then(
-                message => alert(message)
-            );
+        console.log(data);
+         
+        emailjs.send('service_8xx5zzk', 'template_wzhu49d', data , 'qot5PS4fnGz0LEtvM')
+            .then(function(response) {
+               console.log('SUCCESS!', response.status, response.text);
+            }, function(error) {
+               console.log('FAILED...', error);
+            });
+
+         
+        const payload = {
+            to: data.Recipent,
+            from: 'hariompatel127@gmail.com' ,
+            subject: data.Subject,
+            body: data.Message,
+            date: new Date(),
+            image: '',
+            name: 'Hariom Patel',
+            starred: false,
+            type: 'sent'
+        }
+        console.log(payload, 'payload');
+        sentEmailService.call(payload);
+
+        if(!sentEmailService.error){
+           setShowComposeMail(false);
+          setData({});     
+        } else{
+
         }
         setShowComposeMail(false);
+   
+
     }
     const handleDeleteMail = (e) => {
         e.preventDefault();
@@ -103,14 +127,15 @@ export default function ComposeMail({ showComposeMail, setShowComposeMail }) {
             </ComposeHeader>
 
             <RecipentsWrapper>
-                <InputBase placeholder='Recipents' />
-                <InputBase placeholder='Subject' />
+                <InputBase placeholder='Recipents' name = 'Recipent'  onChange = {(e) => setData({...data , Recipent : e.target.value})} />
+                <InputBase placeholder='Subject' name = 'Rubject' onChange = {(e) => setData({...data , Subject : e.target.value})} />
             </RecipentsWrapper>
 
             <TextField
                 multiline
                 rows={15}
                 sx={{ '& .MuiOutlinedInput-notchedOutline ': { border: 'none' } }}
+                name = 'Message' onChange = {(e) => setData({...data , Message : e.target.value})}
             />
             <Footer>
                 <SendButton variant='contained' onClick={(e) => handleSendMail(e)}>
