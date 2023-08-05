@@ -62,35 +62,58 @@ const SendButton = styled(Button)({
 export default function ComposeMail({ showComposeMail, setShowComposeMail }) {
 
     const sentEmailService = useApi(API_URLS.saveSentEmail);
+    const saveDraftService = useApi(API_URLS.saveDraftEmail);
+    
+
+    const [data, setData] = useState({
+        Recipent: "",
+        Subject: "",
+        Message: "",
+    });
 
 
-   const [data, setData] = useState({
-    Recipent : "",
-    Subject: "",
-    Message: "",
-   });
-
- 
     const closeComposeMail = (e) => {
         e.preventDefault();
-        setShowComposeMail(false);
+       
+        const payload = {
+            to: data.Recipent,
+            from: 'hariompatel127@gmail.com',
+            subject: data.Subject,
+            body: data.Message,
+            date: new Date(),
+            image: '',
+            name: 'Hariom Patel',
+            starred: false,
+            type: 'drafts'
+        }
+
+        saveDraftService.call(payload);
+
+        if (!saveDraftService.error) {
+            setShowComposeMail(false);
+            setData({});
+        } else {
+
+        }
     }
+
+
     const handleSendMail = async (e) => {
         e.preventDefault();
 
         console.log(data);
-         
-        emailjs.send('service_8xx5zzk', 'template_wzhu49d', data , 'qot5PS4fnGz0LEtvM')
-            .then(function(response) {
-               console.log('SUCCESS!', response.status, response.text);
-            }, function(error) {
-               console.log('FAILED...', error);
+
+        emailjs.send('service_8xx5zzk', 'template_wzhu49d', data, 'qot5PS4fnGz0LEtvM')
+            .then(function (response) {
+                console.log('SUCCESS!', response.status, response.text);
+            }, function (error) {
+                console.log('FAILED...', error);
             });
 
-         
+
         const payload = {
             to: data.Recipent,
-            from: 'hariompatel127@gmail.com' ,
+            from: 'hariompatel127@gmail.com',
             subject: data.Subject,
             body: data.Message,
             date: new Date(),
@@ -102,14 +125,14 @@ export default function ComposeMail({ showComposeMail, setShowComposeMail }) {
         console.log(payload, 'payload');
         sentEmailService.call(payload);
 
-        if(!sentEmailService.error){
-           setShowComposeMail(false);
-          setData({});     
-        } else{
+        if (!sentEmailService.error) {
+            setShowComposeMail(false);
+            setData({});
+        } else {
 
         }
         setShowComposeMail(false);
-   
+
 
     }
     const handleDeleteMail = (e) => {
@@ -127,15 +150,15 @@ export default function ComposeMail({ showComposeMail, setShowComposeMail }) {
             </ComposeHeader>
 
             <RecipentsWrapper>
-                <InputBase placeholder='Recipents' name = 'Recipent'  onChange = {(e) => setData({...data , Recipent : e.target.value})} />
-                <InputBase placeholder='Subject' name = 'Rubject' onChange = {(e) => setData({...data , Subject : e.target.value})} />
+                <InputBase placeholder='Recipents' name='Recipent' onChange={(e) => setData({ ...data, Recipent: e.target.value })} />
+                <InputBase placeholder='Subject' name='Rubject' onChange={(e) => setData({ ...data, Subject: e.target.value })} />
             </RecipentsWrapper>
 
             <TextField
                 multiline
                 rows={15}
                 sx={{ '& .MuiOutlinedInput-notchedOutline ': { border: 'none' } }}
-                name = 'Message' onChange = {(e) => setData({...data , Message : e.target.value})}
+                name='Message' onChange={(e) => setData({ ...data, Message: e.target.value })}
             />
             <Footer>
                 <SendButton variant='contained' onClick={(e) => handleSendMail(e)}>
