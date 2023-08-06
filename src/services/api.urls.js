@@ -10,6 +10,18 @@ export const API_URLS = {
     saveDraftEmail:{
         endpoint: 'save-draft',
         method: 'POST'
+    },
+    moveEmailsToBin:{
+        endpoint: 'save-bin',
+        method: 'POST'
+    }, 
+    toggleStarredEmail:{
+        endpoint:'starred',
+        method: 'POST'
+    },
+    deleteEmail:{
+        endpoint: 'delete',
+        method: 'DELETE'
     }
 
 }
